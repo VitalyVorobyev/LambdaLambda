@@ -3,28 +3,20 @@
 
 #include <cstdint>
 #include <random>
-#include <chrono>  // seed generator
 
 /** @brief Random double generator (interface) */
 class RndmD {
-    double m_lo;
-    double m_hi;
+    double m_lo;  // lower bound
+    double m_hi;  // upper bound
     static std::default_random_engine rng;
     std::uniform_real_distribution<double> rndm;
 
  public:
-    RndmD(double lo, double hi, int32_t seed = 0) :
-        m_lo(lo), m_hi(hi), rndm(m_lo, m_hi) {
-        if (!seed)
-            rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-        else rng.seed(seed);
-    }
-
-    auto operator()() {return rndm(rng);}
-    auto nonzero() {
-        auto var = 0;
-        while (!(var = rndm(rng))) {}
-        return var;}
+    /** Constructor takes the lower and upper bounds and 
+        the initialization seed value */
+    RndmD(double lo, double hi, int32_t seed = 0);
+    /** Returs a random number uniformly distributed in the range */
+    double operator()();
 };
 
 #endif  // RNDMD_H__

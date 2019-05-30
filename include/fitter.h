@@ -1,4 +1,4 @@
-/** **/
+/** Unbinned maximum likelihood fit for Lambda formfactors and electron beam polarization **/
 
 #ifndef FITTER_H_HH
 #define FITTER_H_HH

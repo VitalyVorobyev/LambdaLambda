@@ -12,9 +12,9 @@ Driver::Driver(double alp, double dphi, double alp1, double alp2, double xi) {
 
 double Driver::operator() (const Event& evt) const {
     // std::cout << "Driver::operator" << std::endl;
-    const double a = std::inner_product(m_fcoef.begin(), m_fcoef.end(), evt.f().begin(), 1.);
+    const double a = std::inner_product(m_fcoef.begin(), m_fcoef.end(), evt.f().begin(), 0.);
     // std::cout << "a = " << a << std::endl;
-    const double b = std::inner_product(m_gcoef.begin(), m_gcoef.end(), evt.g().begin(), 1.);
+    const double b = std::inner_product(m_gcoef.begin(), m_gcoef.end(), evt.g().begin(), 0.);
     // std::cout << "b = " << b << std::endl;
     if (a + m_xi * b < 0)
         std::cout << "a + m_xi * b = " << a + m_xi * b << std::endl;

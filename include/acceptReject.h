@@ -1,4 +1,4 @@
-/** **/
+/** Von Neumann algorithm for event generation **/
 
 #ifndef ACCEPTREJECT_H__
 #define ACCEPTREJECT_H__

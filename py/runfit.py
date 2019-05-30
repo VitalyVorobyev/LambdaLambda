@@ -1,16 +1,28 @@
 #! /usr/bin/python
 
+from reader import ReaderTxt
 from fitter import LLFit
 
 import numpy as np
 
 def main():
-    d = np.load('ll_xi1.npz')
-    events, data = d['events'], d['data']
+    # d = np.load('ll_xi1.npz')
+    # norm, data = d['events'], d['data']
+    datafile = '../ll.dat'
+    normfile = '../build/ll_xi1.txt'
     
-    print(len(events), len(data))
-    print(events[-5:])
-    print(data[:5])
+    nevt = 10000
+    normnevt = 100000
+
+    reader = ReaderTxt(datafile)
+    data = reader.readEvents(nevt)
+
+    normreader = ReaderTxt(normfile, brief=True)
+    norm = normreader.readEvents(normnevt)
+    
+    # print(len(norm), len(data))
+    # print(norm[-5:])
+    # print(data[:5])
     
     model = {
         'alpha' :  0.6,
@@ -21,8 +33,7 @@ def main():
         }
     
     llfit = LLFit()
-    fmin, param = llfit.fitTo(data[:200000], events)
-
+    fmin, param = llfit.fitTo(data, norm)
 
 if __name__ == '__main__':
     main()

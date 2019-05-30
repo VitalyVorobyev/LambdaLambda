@@ -6,7 +6,7 @@ from reader import ReaderTxt
 import numpy as np
 
 def main():
-    datafile = '/home/vitaly/ctau/LambdaLambda/ll.dat'
+    datafile = '../ll.dat'
     reader = ReaderTxt(datafile)
 
     P2 = 3.096**2
@@ -21,7 +21,7 @@ def main():
         'dphi'  :  40. / 180. * np.pi,
         'alph1' :  0.75,
         'alph2' : -0.75,
-        'xi'    :  0.
+        'xi'    :  1.
         }
 
     for key, val in model.iteritems():
@@ -38,9 +38,10 @@ def main():
     xi = np.random.rand(len(events))
     data = events[msq>xi]
 
-    name = 'll_xi0.npz'
+    name = 'll_xi1.npz'
 
     np.savez(name, events=events, data=data)
+    np.savetxt('ll_xi1.dat', data, '%.6f')
 
 if __name__ == '__main__':
     main()

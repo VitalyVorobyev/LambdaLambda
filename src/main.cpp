@@ -26,18 +26,20 @@ std::vector<Event> loadData(const string& fname, bool simple) {
 }
 
 inline std::vector<Event> loadNormData() {
-    return loadData("/home/vitaly/ctau/LambdaLambda/ll.dat", false);
+    return loadData("../data/ll.dat", false);
 }
 
 inline std::vector<Event> loadSignalData() {
-    return loadData("/home/vitaly/ctau/LambdaLambda/build/ll_xi1.txt", true);
+    // return loadData("./ll_xi1.txt", true);
+    return loadData("../data/ll_xi1.dat", true);
 }
 
 int generateData(double xi) {
+    // alpha, dphi, alpha1, alpha2, xi
     Driver driver(0.6, 0.5*3.1415, 0.6, -0.6, xi);
     auto data = loadNormData();
 
-    std::ofstream ofile("ll_xi1.txt", std::ofstream::out);
+    std::ofstream ofile("../data/ll_xi1.txt", std::ofstream::out);
     AcceptReject ar(driver, 1);
     size_t nevt = ar.run(data, ofile);
     ofile.close();
@@ -48,10 +50,19 @@ int generateData(double xi) {
 }
 
 int fitData() {
+    // alpha, dphi, alpha1, alpha2, xi
     Driver driver(0.3, 0., 0.7, -0.7, 1.);
 
     auto dataNorm = loadNormData();
     auto dataSignal = loadSignalData();
+
+    for (size_t i = 0; i < 10; i++) {
+        cout << dataNorm[i] << endl;
+    }
+
+    for (size_t i = 0; i < 10; i++) {
+        cout << dataSignal[i] << endl;
+    }
 
     std::vector<Event> data(dataSignal.begin(), dataSignal.begin()+20000);
     std::vector<Event> norm(dataNorm.begin() + 500000, dataNorm.begin()+700000);

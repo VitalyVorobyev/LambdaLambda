@@ -3,10 +3,14 @@ from driver import LL
 import numpy as np
 
 class ReaderTxt(object):
-    def __init__(self, fname):
+    def __init__(self, fname, brief=False):
         self.f = open(fname, 'r')
+        self.brief = brief
 
     def readEvents(self, nevt=None):
+        if self.brief:
+            return self.readSimple(nevt)
+
         events = []
         if nevt is None:
             nevt = 10**9
@@ -31,10 +35,19 @@ class ReaderTxt(object):
 
         return event
 
+    def readSimple(self, nevt):
+        """ Read brief event format """
+        events = []
+        for line in self.f:
+            if len(events) == nevt:
+                break
+            events.append(map(float, line.split()))
+        return np.array(events)
+
 def main():
     import matplotlib.pyplot as plt
 
-    reader = ReaderTxt('/home/vitaly/ctau/LambdaLambda/ll.dat')
+    reader = ReaderTxt('../ll.dat')
 
     alpha = 0.6
     dphi = 0.5 * np.pi
