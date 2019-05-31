@@ -16,6 +16,7 @@ class ReaderTxt(object):
             nevt = 10**9
         while len(events) < nevt:
             event = self.readEvent()
+            # print(event)
             if event is not None:
                 events.append(event)
             else:
@@ -30,10 +31,7 @@ class ReaderTxt(object):
         for i in range(4):
             self.f.readline()
 
-        event = map(float, self.f.readline().split())
-        self.f.readline() # skip matrix element squared
-
-        return event
+        return map(float, self.f.readline().split())
 
     def readSimple(self, nevt):
         """ Read brief event format """

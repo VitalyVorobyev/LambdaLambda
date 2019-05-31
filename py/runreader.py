@@ -6,42 +6,44 @@ from reader import ReaderTxt
 import numpy as np
 
 def main():
-    datafile = '../ll.dat'
+    datafile = '../data/llraw.dat'
     reader = ReaderTxt(datafile)
+    events = reader.readEvents()  # norm data
 
     P2 = 3.096**2
     M2 = 1.115683**2
     R2 = 0.96**2  # +- 0.14 +- 0.02
     alpha = (P2 - 4.*M2 * R2) / (P2 + 4.*M2 * R2)
-
     print('alpha = {}'.format(alpha))
+
+    xiList = [(-1., '1n'), (0., '0'), (1., '1')]
     
-    model = {
-        'alpha' :  alpha,
-        'dphi'  :  40. / 180. * np.pi,
-        'alph1' :  0.75,
-        'alph2' : -0.75,
-        'xi'    :  1.
+    for xi, label in xiList:
+        model = {
+            'alpha' :  alpha,
+            'dphi'  :  40. / 180. * np.pi,
+            'alph1' :  0.75,
+            'alph2' : -0.75,
+            'xi'    :  xi
         }
 
-    for key, val in model.iteritems():
-        print('{}: {}'.format(key, val))
+        for key, val in model.iteritems():
+            print('{}: {}'.format(key, val))
 
-    ll = LL(**model)
+        ll = LL(**model)
     
-    # Calculate matrix element squared
-    events = reader.readEvents()  # norm data
-    msq = ll(events)
-    msq = msq / max(msq)
+        # Calculate matrix element squared
+        msq = ll(events)
+        msq = msq / max(msq)
     
-    # Accept-reject
-    xi = np.random.rand(len(events))
-    data = events[msq>xi]
+        # Accept-reject
+        xi = np.random.rand(len(events))
+        data = events[msq>xi]
 
-    name = 'll_xi1.npz'
+        name = '../data/ll_xi{}.npz'.format(label)
 
-    np.savez(name, events=events, data=data)
-    np.savetxt('ll_xi1.dat', data, '%.6f')
+        np.savez(name, events=events, data=data)
+        np.savetxt('../data/ll_xi{}.dat'.format(label), data, '%.6f')
 
 if __name__ == '__main__':
     main()

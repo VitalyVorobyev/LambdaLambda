@@ -23,12 +23,8 @@ Event ReaderTxt::readEvent() {
     for (size_t i = 0; i < 5; ++i) {  // skip 4 lines and read the 5th
         getline(m_ifile, line);
     }
-    
     static double th, th1, ph1, th2, ph2;
     m_ifile >> th >> th1 >> ph1 >> th2 >> ph2;
-    for (size_t i = 0; i < 2; ++i) {  // skip another two lines
-        getline(m_ifile, line);
-    }
     return Event(th, th1, ph1, th2, ph2);
 }
 

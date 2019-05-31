@@ -20,15 +20,15 @@ class LL(object):
 
     def __call__(self, event):
         if len(event.shape) == 1:
-            costh, costh1, sinphi1, costh2, sinphi2 = event
+            costh, costh1, phi1, costh2, phi2 = event
         elif len(event.shape) == 2:
-            costh, costh1, sinphi1, costh2, sinphi2 = [event[:,i] for i in range(5)]
+            costh, costh1, phi1, costh2, phi2 = [event[:,i] for i in range(5)]
 
         self.costh, self.sinth = costh, sqomsq(costh)
         self.costh1, self.sinth1 = costh1, sqomsq(costh1)
         self.costh2, self.sinth2 = costh2, sqomsq(costh2)
-        self.cosphi1, self.sinphi1 = sqomsq(sinphi1), sinphi1
-        self.cosphi2, self.sinphi2 = sqomsq(sinphi2), sinphi2
+        self.cosphi1, self.sinphi1 = np.cos(phi1), np.sin(phi1)
+        self.cosphi2, self.sinphi2 = np.cos(phi2), np.sin(phi2)
         self.sincosth = self.costh * self.sinth
 
         if abs(self.xi) < 10**-7:

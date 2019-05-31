@@ -9,6 +9,9 @@
 #include "fitter.h"
 #include "acceptReject.h"
 
+#include "PodioReader.h"
+#include "LLKine.h"
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -26,7 +29,7 @@ std::vector<Event> loadData(const string& fname, bool simple) {
 }
 
 inline std::vector<Event> loadNormData() {
-    return loadData("../data/ll.dat", false);
+    return loadData("../data/llraw.dat", false);
 }
 
 inline std::vector<Event> loadSignalData() {
@@ -75,13 +78,45 @@ int fitData() {
     return 0;
 }
 
+void writeEvent(const PodioReader& pr, std::ofstream& os) {
+    os << "Event" << endl
+       << pr.p4p() << endl
+       << pr.p4pbar() << endl
+       << pr.p4pip()  << endl
+       << pr.p4pin() << endl;
+    auto xi = LLKine::xi(pr.p4p(), pr.p4pin(), pr.p4pbar(), pr.p4pip());
+    for (auto x : xi) {
+        os << x << " ";
+    }
+    os << endl;
+}
+
+int processPodio() {
+    PodioReader pr("/home/vitaly/CTau/Data/fccedm/jpsipppipi.root");
+    std::ofstream os("../data/llraw.dat", std::ofstream::out);
+
+    for (size_t i = 0; i < pr.nEvt(); i++) {
+        if (!((i+1) % 10000)) {
+            cout << i+1 << " events" << endl;
+        }
+        pr.event();
+        writeEvent(pr, os);
+    }
+    return 0;
+}
+
 int main(int argc, char** argv) {
     if (argc == 1) {
         return fitData();
     } else if (argc == 2) {
         string cmd(argv[1]);
-        if (cmd == "fit") return fitData();
-        else if (cmd == "gen") return generateData(1.);
+        if (cmd == "fit") {
+            return fitData();
+        } else if (cmd == "gen") {
+            return generateData(1.);
+        } else if (cmd == "podio") {
+            return processPodio();
+        }
     }
     cout << "Wrong use" << endl;
     return -1;

@@ -8,9 +8,23 @@ set(CMAKE_BUILD_TYPE Release)
 
 find_package(Minuit2 REQUIRED)
 
-include_directories(include)
+include_directories(
+    include
+    /home/vitaly/work/MyLibs/libLinAl/src
+    /home/vitaly/Dist/podio/include
+    /home/vitaly/Dist/fcc-edm/datamodel
+)
+
+link_directories(
+    /home/vitaly/work/MyLibs/libLinAl/build
+)
 
 file(GLOB SOURCES src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} PUBLIC Minuit2::Minuit2)
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC Minuit2::Minuit2
+    libpodio.so
+    libdatamodel.so
+    libLinal.so
+)

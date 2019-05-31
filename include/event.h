@@ -1,4 +1,4 @@
-/** **/
+/** The Event class **/
 
 #ifndef EVENT_H__
 #define EVENT_H__
@@ -15,6 +15,8 @@ class Event {
     const double c_sinth2;
     const double c_cosphi1;
     const double c_cosphi2;
+    const double c_sinphi1;
+    const double c_sinphi2;
     const double c_costhsq;  // cos**2(th)
     const double c_sinthsq;  // sin**2(th)
     const double c_sinth;
@@ -23,7 +25,7 @@ class Event {
     const std::array<double, 5> c_g;  // polarization-dependent structure functions
 
  public:
-    Event(double cth, double cth1, double sphi1, double cth2, double sphi2);
+    Event(double cth, double cth1, double phi1, double cth2, double phi2);
 
     const auto& f() const {return c_f;}
     const auto& g() const {return c_g;}
