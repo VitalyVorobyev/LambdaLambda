@@ -40,7 +40,6 @@ class LL(object):
                 print('a: ', a[negaMask])
             return a
 
-
         a, b = self._a(), self._b()
         r = a + self.xi * b
         

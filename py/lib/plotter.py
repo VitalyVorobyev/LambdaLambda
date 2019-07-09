@@ -6,6 +6,43 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
+def protonMomentumSpec(moms):
+    """ """
+    pass
+
+def cosTh(moms):
+    """ """
+    return moms[:,-1] / np.sqrt(np.sum(moms[:,1:]**2, axis=-1))
+
+def protonPolarCMS(moms, nbins, fnum, fname):
+    """ """
+    phist1, bins1 = np.histogram(cosTh(moms[:,0,:]), bins=nbins, range=(-1., 1.), density=True)
+    phist2, bins2 = np.histogram(cosTh(moms[:,1,:]), bins=nbins, range=(-1., 1.), density=True)
+    bins = 0.5 * (bins1[1:] + bins1[:-1])
+
+    coefs1 = np.polyfit(bins, phist1, 2)
+    coefs2 = np.polyfit(bins, phist2, 2)
+    print('fit1: {}'.format(coefs1))
+    print('fit2: {}'.format(coefs2))
+    poly1 = np.poly1d(coefs1)
+    poly2 = np.poly1d(coefs2)
+
+    plt.rc('xtick', labelsize=12)
+    plt.rc('ytick', labelsize=12)
+    plt.figure(num=fnum, figsize=(6, 5))
+    plt.plot(bins, phist1, linestyle='none', marker='.', label=r'$p$')
+    plt.plot(bins, poly1(bins))
+    plt.plot(bins, phist2, linestyle='none', marker='.', label=r'$\overline{p}$')
+    plt.plot(bins, poly2(bins))
+    plt.ylim([0, 1.05*max(phist2)])
+    plt.xlabel(r'$\cos{\theta}$', fontsize=16)
+    plt.grid()
+    plt.legend(loc='best', fontsize=18)
+    plt.tight_layout()
+
+    plt.savefig('../plots/{}.pdf'.format(fname))
+    plt.savefig('../plots/png/{}.png'.format(fname))
+
 def plot1D(events, dim, label):
     """ 1D hist plot """
     x = events[:,dim]

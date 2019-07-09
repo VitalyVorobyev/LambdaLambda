@@ -7,8 +7,8 @@ import numpy as np
 
 def main():
     datafile = '../data/llraw.dat'
-    reader = ReaderTxt(datafile)
-    events = reader.readEvents()  # norm data
+    reader = ReaderTxt(datafile, brief=False)
+    events, moms = reader.readEvents()  # norm data
 
     P2 = 3.096**2
     M2 = 1.115683**2
@@ -17,6 +17,7 @@ def main():
     print('alpha = {}'.format(alpha))
 
     xiList = [(-1., '1n'), (0., '0'), (1., '1')]
+    # xiList = [(.5, 'half')]
     
     for xi, label in xiList:
         model = {
@@ -37,12 +38,13 @@ def main():
         msq = msq / max(msq)
     
         # Accept-reject
-        xi = np.random.rand(len(events))
-        data = events[msq>xi]
+        mask = msq > np.random.rand(len(events))
+        data = events[mask]
+        dataMoms = moms[mask]
 
         name = '../data/ll_xi{}.npz'.format(label)
 
-        np.savez(name, events=events, data=data)
+        np.savez(name, events=events, data=data, moms=dataMoms)
         np.savetxt('../data/ll_xi{}.dat'.format(label), data, '%.6f')
 
 if __name__ == '__main__':
