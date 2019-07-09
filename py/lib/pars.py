@@ -2,6 +2,8 @@
 
 import numpy as np
 
+datapath = '../data'
+
 class Pars(object):
     def __init__(self, dphi, alpha, alph1, alph2=None):
         self.dphi = dphi
@@ -11,6 +13,13 @@ class Pars(object):
         self.beta = np.sqrt(1. - alpha**2)
         self.alph1 = alph1
         self.alph2 = -alph1 if alph2 is None else alph2
+
+    def __str__(self):
+        return 'Pars:\n\
+   alpha: {:.3f}\n\
+    dphi: {:.3f}\n\
+   alph1: {:.3f}\n\
+   alph1: {:.3f}'.format(self.alpha, self.dphi, self.alph1, self.alph2)
 
 pars = Pars (
     42.4 / 180. * np.pi,  # +- 0.6 +- 0.5 deg

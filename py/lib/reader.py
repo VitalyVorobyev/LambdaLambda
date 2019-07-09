@@ -1,5 +1,3 @@
-from driver import LL
-
 import numpy as np
 
 class ReaderTxt(object):
