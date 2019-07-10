@@ -6,7 +6,6 @@ from pars import pars
 
 pisq = np.pi**2 
 pisqOver16 = pisq / 16.
-eps = 1.e-6
 
 def a(data, p):
     return 1. + p.alpha*data.f5() +\
@@ -20,7 +19,7 @@ def b(data, p):
 
 def csec6D(data, xi, p=pars):
     """ Complere differential cross section """
-    result = a(data, p) if xi < eps else a(data, p) + xi * b(data, p)
+    result = a(data, p) if np.isclose(xi, 0) else a(data, p) + xi * b(data, p)
     if (any(result < 0)):
         print('Negative PDF detected')
     return result

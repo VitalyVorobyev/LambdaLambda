@@ -18,10 +18,11 @@ def main():
     deff = DetEff(10., 0.05)
     phspMask = deff(moms)
 
-    xiList = [(-1., '1n'), (0., '0'), (1., '1')]
-    print(pars)
+    xiList = np.linspace(-1., 1., 21)
 
-    for xi, label in xiList:
+    for xi in xiList:
+        label = '{:.1f}'.format(xi).replace('.','_')
+        print(label)
         # Calculate matrix element squared
         msq = csec6D(Data(phsp), xi, pars)
         msq = msq / max(msq)

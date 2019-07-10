@@ -33,7 +33,6 @@ def sinToCos(sin):
 class Data(object):
     def __init__(self, events):
         """ events is a np.array of shape (nevt, 5) """
-        print(events.shape)
         self.costh = events[:,0]
         self.sinth = sinToCos(self.costh)
         self.costh1 = events[:,1]

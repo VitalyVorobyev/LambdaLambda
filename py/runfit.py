@@ -1,50 +1,58 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 import sys
 sys.path.append('./lib')
 
-# from reader import ReaderTxt
 from pars import Data, Pars, pars, datapath
 from fitter import FitFull, FitFullUnpolarized, FitPhi, FitFB2D
 
 import numpy as np
+import matplotlib.pyplot as plt
+
+fitmap = {
+    'full' : FitFull,
+    'upol' : FitFullUnpolarized,
+    'phif' : FitPhi,
+    'fb2d' : FitFB2D
+}
 
 def main():
-    # datafile = '../data/llraw.dat'
-    # normfile = '../data/ll_xi1.npz'
-
-    datafile = '/'.join([datapath, 'll_xi1n.npz'])
+    if len(sys.argv) > 2:
+        xi = '{:.1f}'.format(float(sys.argv[2])).replace('.', '_')
+    else:
+        xi = '1_0'
+    datafile = '/'.join([datapath, 'll_xi{}.npz'.format(xi)])
     data = np.load(datafile)
-    print(data)
 
     nevt = 100000
     normnevt = 1000000
 
     signal = Data(data['signal'][:nevt])
     norm = Data(data['phsp'][:normnevt])
-    print(type(signal))
-    print(signal.N)
-
-    # return
-
-    # reader = ReaderTxt(datafile, brief=False)
-    # data = Data(reader.readEvents(nevt)[0])
-
-    # normreader = ReaderTxt(normfile, brief=True)
-    # norm = Data(normreader.readEvents(normnevt))
 
     model = {
         'alpha' :  0.6,
         'dphi'  :  0.5 * np.pi,
         'alph1' :  0.6,
-        'alph2' : -0.6,
-        # 'xi'    :  0.0
+        'alph2' : -0.6
     }
+    pars = Pars(**model)
 
-    # pars = Pars(**model)
-    llfit = FitFullUnpolarized()
-    fmin, param = llfit.fitTo(signal, norm, pars)
-    # fmin, param = llfit.fitTo(data, norm, pars)
+    if len(sys.argv) > 1 and sys.argv[1] in fitmap:
+        llfit = fitmap[sys.argv[1]]()
+    else:
+        llfit = FitFullUnpolarized()
+    fmin, fitres, mtx = llfit.fitTo(signal, norm, pars)
+    print(fmin)
+
+    for line in mtx:
+        for val in line:
+            print('{:2.3f} '.format(val), end=' ')
+        print('')
+
+    for p in fitres:
+        print('{:5s}: {:.3f} / sqrt(N)'.format(p.name, p.error * np.sqrt(signal.N)))
+
 
 if __name__ == '__main__':
     main()
