@@ -1,50 +1,45 @@
-""" Calculations for left-right asymmetry """
+""" Calculations for forward-backward asymmetry """
 
 from pars import pars
-from pdfs import aLR
+from pdfs import aFB
 from upolfit import corrMtx, hessErr
 
 import numpy as np
 
-def eta():
-    """ aLR(1.) """
-    return 3.*np.pi/8.*np.sqrt(1. - pars.alpha**2) / (3.+pars.alpha)*\
-        pars.alph1 * pars.cosdphi
+def etaFB():
+    """ aFB(1.) """
+    return 0.75 * pars.alph1 * (pars.alpha + 1.)/(pars.alpha + 3.)
 
 def dAlr(xi):
     """ """
-    xietasq = (xi*eta())**2
+    xietasq = (xi*etaFB())**2
     return np.sqrt(0.5 * (1. + xietasq)) / xietasq
 
-def dxidAlr():
-    """ partial derivative of xi over Alr """
-    # return 1./aLR(1., pars)
-    return 1. / eta()
-
-def dxidDphi(xi):
-    """ partial derivative of xi over dPhi """
-    return 8. / (3.*np.pi) * aLR(xi, pars) * (pars.alpha + 3) / np.sqrt(1.-pars.alpha**2) *\
-        pars.sindphi / pars.cosdphi**2 / pars.alph1
+def dxidAfb():
+    """ """
+    return 1. / etaFB()
 
 def dxidAlpha(xi):
-    """ partial derivative of xi over alpha """
-    return 8. / (3.*np.pi) * aLR(xi, pars) / pars.cosdphi *\
-        (3.*pars.alpha + 1)/(1.-pars.alpha**2)**(3/2) / pars.alph1
+    """ """
+    return -8./3. * aFB(xi, pars) / (1.+pars.alpha)**2 / pars.alph1
 
 def dxidAlph1(xi):
-    """ partial derivative of xi over alpha1 """
-    return -8. / (3.*np.pi) * aLR(xi, pars) / pars.cosdphi *\
-        (pars.alpha + 2)/np.sqrt(1.-pars.alpha**2) / pars.alph1**2
+    """ """
+    return -4./3 * aFB(xi, pars) * (3. + pars.alpha) / (1. + pars.alpha) / pars.alph1**2
+
+def dxidDphi(xi):
+    """ """
+    return 0.
 
 def derivs(xi):
     """ Vector of partial derivatives """
-    return np.array([dxidAlr(), dxidAlpha(xi), dxidDphi(xi), dxidAlph1(xi)])
+    return np.array([dxidAfb(), dxidAlpha(xi), dxidDphi(xi), dxidAlph1(xi)])
 
 def dxi(xi):
     """ sigma(xi) = sqrt(
-        (dxi / dAlr   * sigma(Alr))   ** 2 + 
+        (dxi / dAfb   * sigma(Alr))   ** 2 + 
         (dxi / ddPhi  * sigma(dPhi))  ** 2 + ...
-        2*(dxi / dAlr) * (dxi / ddPhi) * cov(Alr, dPhi) + ...
+        2*(dxi / dAfb) * (dxi / ddPhi) * cov(Afb, dPhi) + ...
     )
     """
     der = derivs(xi)
@@ -58,7 +53,7 @@ def dxi(xi):
 def main():
     """ Unit test """
     xi = 1.
-    print('  Alr: {:.3f}'.format(dxidAlr()))
+    print('  Abf: {:.3f}'.format(dxidAfb()))
     print(' dphi: {:.3f}'.format(dxidDphi(xi)))
     print('alpha: {:.3f}'.format(dxidAlpha(xi)))
     print('alph1: {:.3f}'.format(dxidAlph1(xi)))
@@ -80,7 +75,7 @@ def main():
     plt.ylim((10**-4, 20.))
     plt.legend(loc='best')
     plt.tight_layout()
-    plt.savefig('lrasym_xi_prec.pdf')
+    plt.savefig('fbasym_xi_prec.pdf')
     plt.show()
 
 if __name__ == '__main__':
