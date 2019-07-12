@@ -34,7 +34,8 @@ def main():
                    cmap="coolwarm_r", cbarlabel=None)
     texts = annotate_heatmap(im, valfmt="{x:.2f}")
     fig.tight_layout()
+    plt.savefig('corr_mtx_upol.pdf')
+    plt.show()
 
 if __name__ == '__main__':
     main()
-    plt.show()

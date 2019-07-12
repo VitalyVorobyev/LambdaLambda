@@ -124,7 +124,8 @@ def drawCorr(xi):
     texts = annotate_heatmap(im, valfmt="{x:.2f}")
 
     fig.tight_layout()
-    # plt.show()
+    plt.savefig('corr_mtx_full_xi{:.1f}'.format(xi) + '.pdf')
+    plt.show()
 
 def precisionPlot(var, xil):
     """ """
@@ -147,16 +148,23 @@ def precisionPlot(var, xil):
     plt.savefig('fullfit_xi_prec.pdf')
     plt.show()
 
+def correlationPlot(var1, var2):
+    """ Correlation as function of polarization """
+    
+
+def precisionPlot(var1, var2):
+    """ Correlation as function of polarization """
+    pass
+
 def main():
     """ Unit test """
-    # drawCorr(0.6)
-    # drawCorr(0.)
-    # drawCorr(1.)
-    # drawCorr(-1.)
-    # plt.show()
+    drawCorr(0.6)
+    drawCorr(0.4)
+    drawCorr(0.8)
+    drawCorr(0.9)
 
-    xi = [0.4, 0.6, 0.8, 0.9]
-    precisionPlot('xi', xi)
+    # xi = [0.4, 0.6, 0.8, 0.9]
+    # precisionPlot('xi', xi)
    
 
 if __name__ == '__main__':

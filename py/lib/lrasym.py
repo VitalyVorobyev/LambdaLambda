@@ -42,8 +42,8 @@ def derivs(xi):
 
 def dxi(xi):
     """ sigma(xi) = sqrt(
-        (dxi / dAlr   * sigma(Alr))   ** 2 + 
-        (dxi / ddPhi  * sigma(dPhi))  ** 2 + ...
+        (dxi / dAlr   * sigma(Alr))  ** 2 + 
+        (dxi / ddPhi  * sigma(dPhi)) ** 2 + ...
         2*(dxi / dAlr) * (dxi / ddPhi) * cov(Alr, dPhi) + ...
     )
     """
