@@ -1,10 +1,10 @@
 #! /usr/bin/python3
 
-import sys
-sys.path.append('./lib')
+from collections import OrderedDict
 
-from pars import Data, Pars, pars, datapath
-from fitter import FitFull, FitFullUnpolarized, FitPhi, FitFB2D
+from lib.pars import Data, Pars, pars, datafile, fitresfile
+from lib.fitter import FitFull, FitFullUnpolarized, FitPhi, FitFB2D, FitSSide
+from lib.efficiency import applyDetEff
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,46 +13,63 @@ fitmap = {
     'full' : FitFull,
     'upol' : FitFullUnpolarized,
     'phif' : FitPhi,
-    'fb2d' : FitFB2D
+    'fb2d' : FitFB2D,
+    'ss3d' : FitSSide
 }
 
-def main():
-    if len(sys.argv) > 2:
-        xi = '{:.1f}'.format(float(sys.argv[2])).replace('.', '_')
-    else:
-        xi = '1_0'
-    datafile = '/'.join([datapath, 'll_xi{}.npz'.format(xi)])
-    data = np.load(datafile)
+def saveFitRes(ftype, xi, eff, nsig, fres):
+    """ """
+    np.savez(fitresfile(ftype, xi, eff),
+        status = np.array([[key, fres[0][key]] for key in  fres[0]]),
+        fitres=np.array([[p.name, [p.value, p.error * np.sqrt(nsig)]] for p in fres[1]]),
+        corr=np.array(fres[2]),
+        nsig=nsig
+    )
 
-    nevt = 100000
-    normnevt = 1000000
+def getData(xi):
+    return np.load(datafile(xi))
 
-    signal = Data(data['signal'][:nevt])
-    norm = Data(data['phsp'][:normnevt])
+def runfit(data, ftype, N=10**5., xi=0., eff=False):
+    """ """
+    xi = '{:.1f}'.format(xi).replace('.', '_')
 
-    model = {
-        'alpha' :  0.6,
-        'dphi'  :  0.5 * np.pi,
-        'alph1' :  0.6,
-        'alph2' : -0.6
-    }
-    pars = Pars(**model)
+    signal = Data(applyDetEff(data['signal'][:N], data['signalmask'][:N], False))\
+        if eff else Data(data['signal'][:N])
+    norm = Data(data['phsp'])
 
-    if len(sys.argv) > 1 and sys.argv[1] in fitmap:
-        llfit = fitmap[sys.argv[1]]()
-    else:
-        llfit = FitFullUnpolarized()
+    llfit = fitmap[ftype]()
     fmin, fitres, mtx = llfit.fitTo(signal, norm, pars)
     print(fmin)
-
-    for line in mtx:
-        for val in line:
-            print('{:2.3f} '.format(val), end=' ')
-        print('')
+    print(np.array(mtx))
 
     for p in fitres:
-        print('{:5s}: {:.3f} / sqrt(N)'.format(p.name, p.error * np.sqrt(signal.N)))
+        print('{:5s}: {:.3f}'.format(p.name, p.error * np.sqrt(signal.N)))
 
+    saveFitRes(ftype, xi, eff, signal.N, (fmin, fitres, mtx))
+
+    print('Eff: {:.3f}'.format(float(signal.N) / data['signal'].shape[0]))
+
+def runAll(nevt=10**5):
+    """ Run all procedures """
+    for xi in np.linspace(-1., 1., 21):
+        data = getData(xi)
+        for eff in [False, True]:
+            print('Eff turned on' if eff else 'Eff turned off')
+            for ftype in fitmap:
+                if ftype != 'upol':
+                    print('Starting {} for xi {}'.format(ftype, xi))
+                    runfit(data, ftype, nevt, xi, eff)
+    
+    data = getData(0.)
+    runfit(data, 'upol', nevt, 0., False)
+    runfit(data, 'upol', nevt, 0., True)
+
+def main():
+    """ Unit test """
+    # ftype = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] in fitmap else 'full'
+    # xi = float(sys.argv[2]) if len(sys.argv) > 2 else 0.6
+    # runfit(getData(xi), ftype, xi, False)
 
 if __name__ == '__main__':
-    main()
+    runAll()
+    # main()

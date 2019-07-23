@@ -1,8 +1,50 @@
 """ Form-factors from BESIII measurement """
 
 import numpy as np
+from collections import OrderedDict
 
 datapath = '../data'
+frespath = '/'.join([datapath, 'fitres'])
+plotpath = '../plots'
+
+varmap = {
+    'alpha' : 0,
+     'dphi' : 1,
+    'alph1' : 2,
+    'alph2' : 3,
+       'xi' : 4
+}
+
+varttl = OrderedDict([
+    ['alpha', r'$\alpha$'],
+     ['dphi', r'$d\Phi$'],
+    ['alph1', r'$\alpha_1$'],
+    ['alph2', r'$\alpha_2$'],
+       ['xi', r'$\xi$']
+])
+
+def floxi(xi):
+    if isinstance(xi, float):
+        return xi
+    return float(xi.replace('_', '.'))
+
+def strxi(xi):
+    if isinstance(xi, str):
+        return xi
+    return '{:.1f}'.format(xi).replace('.', '_')
+
+def datafile(xi):
+    """ """
+    return '/'.join([datapath, 'll_xi{}.npz'.format(strxi(xi))])
+
+def fitresfile(ftype, xi, eff):
+    """ File to keep fit results """
+    components = ['fres', ftype]
+    if ftype is not 'upol':
+        components.append(strxi(xi))
+    if eff:
+        components.append('eff')
+    return '/'.join([frespath, '_'.join(components)])
 
 class Pars(object):
     def __init__(self, dphi, alpha, alph1, alph2=None):
@@ -13,6 +55,14 @@ class Pars(object):
         self.beta = np.sqrt(1. - alpha**2)
         self.alph1 = alph1
         self.alph2 = -alph1 if alph2 is None else alph2
+        self.pdict = OrderedDict(
+            [['alpha', alpha], ['dphi', dphi], ['alph1', alph1], ['alph2', self.alph2]]
+        )
+
+    def __getitem__(self, key):
+        """ """ 
+        assert(key in self.pdict)
+        return self.pdict[key]
 
     def __str__(self):
         return 'Pars:\n\

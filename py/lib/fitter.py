@@ -1,7 +1,7 @@
 from iminuit import Minuit
 
-from pars import Pars, Data
-from pdfs import csec6D, csec2D, csecPhi
+from lib.pars import Pars, Data
+from lib.pdfs import csec6D, csec2D, csecPhi, csec3D
 
 import numpy as np
 
@@ -83,7 +83,7 @@ class FitPhi(object):
 
         fmin, param = minimizer.migrad()
         minimizer.print_param()
-        return (fmin, param)
+        return (fmin, param, minimizer.matrix(correlation=True))
 
 """ Forward-backward distribution 2D fit  """
 class FitFB2D(object):
@@ -106,4 +106,33 @@ class FitFB2D(object):
 
         fmin, param = minimizer.migrad()
         minimizer.print_param()
-        return (fmin, param)
+        return (fmin, param, minimizer.matrix(correlation=True))
+
+""" Single-side full 3D fit """
+class FitSSide(object):
+    full = True
+    def fcn(self, alpha, dphi, alph1, xi):
+        loglh = self.loglh(xi, Pars(dphi, alpha, alph1, 0.))
+        print('loglh: {:.2f}, a {:.3f}, phi {:.3f}, a1 {:.3f}, xi {:.3f}'.format(
+            loglh, alpha, dphi, alph1, xi))
+        return loglh
+    
+    def loglh(self, xi, p):
+        return -np.sum(np.log(csec3D(self.data, xi, p))) +\
+            np.log(np.sum(csec3D(self.normdata, xi, p))) * self.data.N
+
+    def fitTo(self, data, normdata, init):
+        self.data = data
+        self.normdata = normdata
+        
+        minimizer = Minuit(self.fcn, errordef=0.5,
+            alpha=init.alpha, error_alpha=0.1, limit_alpha=(-1., 1.),       fix_alpha=not FitSSide.full,
+             dphi=init.dphi,  error_dphi =1.0, limit_dphi =(-np.pi, np.pi), fix_dphi =not FitSSide.full,
+            alph1=init.alph1, error_alph1=0.1, limit_alph1=(0., 1.),        fix_alph1=not FitSSide.full,
+               xi= 0.0,       error_xi   =0.5, limit_xi   =(-1.05, 1.01),   fix_xi   =False
+        )
+
+        fmin, param = minimizer.migrad()
+        minimizer.print_param()
+        corrmtx = minimizer.matrix(correlation=True)
+        return (fmin, param, corrmtx)

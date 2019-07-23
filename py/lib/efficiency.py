@@ -21,6 +21,10 @@ class DetEff(object):
         costh = moms[:,:,-1] / np.sqrt(pSq)
         return (np.abs(costh) < self.costh) & (ptSq > thr)
 
+def applyDetEff(data, mask, sside):
+    """ """
+    return data[np.all(mask, axis=-1)]
+
 def main():
     """ Unit test """
     data = np.random.rand(1000000, 4, 4)

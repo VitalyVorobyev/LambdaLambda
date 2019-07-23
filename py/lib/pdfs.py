@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from pars import pars
+from lib.pars import pars
 
 pisq = np.pi**2 
 pisqOver16 = pisq / 16.
@@ -26,16 +26,16 @@ def csec6D(data, xi, p=pars):
 
 def csec3D(data, xi, p=pars):
     """ Single Lambda cross section """
-    return 1. + p.alpha * data.costh**2 + p.alph1 * np.sqrt(1. - p.alpha**2) * p.sindphi *\
-        data.costh * data.sinth1 * data.sinphi1 + xi * (
-            (1.+p.alpha)*p.alph1 + p.alph1 * np.sqrt(1. - p.alpha**2) * p.cosdphi *\
-            data.sinth * data.sinth1 * data.cosphi1
+    return 1. + p.alpha*data.costh**2 + p.alph1*p.beta*p.sindphi*\
+        data.sinth*data.costh*data.sinth1*data.sinphi1 + xi*(
+            (1. + p.alpha)*p.alph1*data.costh*data.costh1 +
+            p.alph1*p.beta*p.cosdphi*data.sinth*data.sinth1*data.cosphi1
         )
 
 def csecPhi(data, xi, p=pars):
     """ 1D cross section for azimuthal angle in Lambda frame """
-    return 1. + p.alpha / 3. + xi * pisqOver16 * p.alph1 * np.sqrt(1. - p.alpha**2)*\
-        p.cosdphi * data.cosphi1
+    return 1. + p.alpha / 3. +\
+        xi*pisqOver16*p.alph1*p.beta*p.cosdphi*data.cosphi1
 
 def csec2D(data, xi, p=pars):
     """ Single Lambda cross section """
