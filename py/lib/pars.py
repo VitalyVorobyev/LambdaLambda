@@ -69,7 +69,7 @@ class Pars(object):
    alpha: {:.3f}\n\
     dphi: {:.3f}\n\
    alph1: {:.3f}\n\
-   alph1: {:.3f}'.format(self.alpha, self.dphi, self.alph1, self.alph2)
+   alph2: {:.3f}'.format(self.alpha, self.dphi, self.alph1, self.alph2)
 
 pars = Pars (
     42.4 / 180. * np.pi,  # +- 0.6 +- 0.5 deg

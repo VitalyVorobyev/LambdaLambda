@@ -3,36 +3,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import sys
-sys.path.append('./lib')
+from lib.pars import plotpath, varttl, strxi
 
-from pars import plotpath, varttl, strxi
-
-font = {'family' : 'monospace',
-        'size'   : 14}
-
+font = {'family' : 'monospace', 'size'   : 14}
 plt.rc('font', **font)  # pass in the font dict as kwargs
 
-
-def drawPrecisionNevt(var, xil):
+def drawPrecisionNevt(lbl, var, xil, fresxi):
     """ """
     plt.rc('font', size=14)
-    n = np.logspace(5, 8)
+    n = np.logspace(6, 9)
     for xi in xil:
-        err = hessErr(xi)[varmap[var]]
+        err = fresxi[strxi(xi)][var][1]
         print(xi, err)
         if err is not None:
             plt.plot(n, err / np.sqrt(n) / xi, label=r'$\xi=${:.1f}'.format(xi))
-    plt.grid()
+    plt.grid(which='both')
     plt.semilogx()
     plt.semilogy()
     plt.ylabel(r'$d\xi/\xi$')
     plt.xlabel(r'$N$')
-    plt.xlim((10**5, 10**8))
-    plt.ylim((10**-4, 20.))
+    plt.xlim((10**6, 10**9))
+    plt.ylim((1e-4, 2e-2))
     plt.legend(loc='best')
     plt.tight_layout()
-    plt.savefig('fullfit_xi_prec.pdf')
+    plt.savefig('/'.join([plotpath, '{}_{}_prec.pdf'.format(lbl, var)]))
+    plt.savefig('/'.join([plotpath, '{}_{}_prec.png'.format(lbl, var)]))
     plt.show()
 
 def drawPrecision(lbl, fresxi, relative=False):
@@ -72,4 +67,31 @@ def drawPrecision(lbl, fresxi, relative=False):
         plt.savefig('/'.join([plotpath, fname + '.png']))
         plt.savefig('/'.join([plotpath, fname + '.pdf']))
 
+    plt.show()
+
+def asymPrecision(lbl, xil):
+    """ """
+    if lbl == 'fb':
+        import lib.fbasym
+        dxi = lib.fbasym.dxi
+    elif lbl == 'lr':
+        import lib.lrasym
+        dxi = lib.lrasym.dxi
+    else:
+        return
+
+    n = np.logspace(6, 9)
+    for xi in xil:
+        plt.plot(n, dxi(xi, 1, 1) / np.sqrt(n) / xi, label=r'$\xi=${:.1f}'.format(xi))
+    plt.grid(which='both')
+    plt.semilogx()
+    plt.semilogy()
+    plt.ylabel(r'$d\xi/\xi$')
+    plt.xlabel(r'$N$')
+    plt.xlim((10**6, 10**9))
+    plt.ylim((1e-4, 2e-2))
+    plt.legend(loc='best')
+    plt.tight_layout()
+    plt.savefig('/'.join([plotpath, '{}asym_xi_prec.pdf'.format(lbl)]))
+    plt.savefig('/'.join([plotpath, '{}asym_xi_prec.png'.format(lbl)]))
     plt.show()

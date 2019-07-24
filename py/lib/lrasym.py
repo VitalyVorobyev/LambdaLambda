@@ -1,8 +1,11 @@
+#! /usr/bin/env python3
 """ Calculations for left-right asymmetry """
 
-from pars import pars
-from pdfs import aLR
-from upolfit import corrMtx, hessErr
+from lib.pars import pars, plotpath
+from lib.pdfs import aLR
+from lib.fitresreader import readFitRes
+
+from draw.precision import asymPrecision
 
 import numpy as np
 
@@ -18,7 +21,6 @@ def dAlr(xi):
 
 def dxidAlr():
     """ partial derivative of xi over Alr """
-    # return 1./aLR(1., pars)
     return 1. / eta()
 
 def dxidDphi(xi):
@@ -38,22 +40,35 @@ def dxidAlph1(xi):
 
 def derivs(xi):
     """ Vector of partial derivatives """
-    return np.array([dxidAlr(), dxidAlpha(xi), dxidDphi(xi), dxidAlph1(xi)])
+    return np.array([dxidAlpha(xi), dxidDphi(xi), dxidAlph1(xi)])
 
-def dxi(xi):
+def errors(data):
+    """ """
+    return np.array([data['fitres'][key][1] for key in ['alpha', 'dphi', 'alph1']])
+
+def correl(data):
+    """ """
+    return data['fitcor'][:-1,:-1]
+
+def sigmaCoefs(data):
+    """ """
+    errs = errors(data)
+    corr = correl(data)
+    ders = derivs(1.)
+
+    p1 = (np.outer(errs, errs) * corr * np.outer(ders, ders)).sum()
+    return (1./eta()**2, p1)
+
+def dxi(xi, n1, n2):
     """ sigma(xi) = sqrt(
         (dxi / dAlr   * sigma(Alr))  ** 2 + 
         (dxi / ddPhi  * sigma(dPhi)) ** 2 + ...
         2*(dxi / dAlr) * (dxi / ddPhi) * cov(Alr, dPhi) + ...
     )
     """
-    der = derivs(xi)
-    errs = np.array([dAlr(xi)] + list(hessErr()[:-1]))
-    corr = corrMtx()
-    return np.sqrt(
-        ((der*errs)**2).sum() +\
-        2. * (np.outer(errs, errs) * corr * np.outer(der, der)).sum()
-    )
+    data = readFitRes('upol', 0., False)
+    p0, p1 = sigmaCoefs(data)
+    return np.sqrt((p0 + xi**2)/n1 + p1*xi**2 / n2)
 
 def main():
     """ Unit test """
@@ -62,26 +77,23 @@ def main():
     print(' dphi: {:.3f}'.format(dxidDphi(xi)))
     print('alpha: {:.3f}'.format(dxidAlpha(xi)))
     print('alph1: {:.3f}'.format(dxidAlph1(xi)))
-    print('  dxi: {:.3f}'.format(dxi(xi)))
+    print('  dxi: {:.3f}'.format(dxi(xi, 1, 1)))
+
+    data = readFitRes('upol', 0., False)
+    p0, p1 = sigmaCoefs(data)
+    print('p0: {:.3f}, p1: {:.3f}'.format(p0, p1))
 
     import matplotlib.pyplot as plt
     plt.rc('font', size=14)
 
-    xi = [0.4, 0.6, 0.8, 0.9]
-    n = np.logspace(5, 8)
-    for x in xi:
-        plt.plot(n, dxi(x) / np.sqrt(n) / x, label=r'$\xi=${:.1f}'.format(x))
-    plt.grid()
-    plt.semilogx()
-    plt.semilogy()
-    plt.ylabel(r'$d\xi/\xi$')
-    plt.xlabel(r'$N$')
-    plt.xlim((10**5, 10**8))
-    plt.ylim((10**-4, 20.))
-    plt.legend(loc='best')
-    plt.tight_layout()
-    plt.savefig('lrasym_xi_prec.pdf')
-    plt.show()
+    xi = [0.4, 0.6, 0.8]
+    asymPrecision('lr', xi)
 
 if __name__ == '__main__':
+    3.5, 7.5, 6.8
+    0.87, 0.91, -0.95
+
+
+
+
     main()

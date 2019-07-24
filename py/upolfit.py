@@ -1,12 +1,10 @@
+#! /usr/bin/env python3
 """ """
 
 import numpy as np
 
-from fitresreader import readFitRes
-from pars import plotpath, pars
-
-# import sys
-# sys.path.append('./draw')
+from lib.fitresreader import readFitRes
+from lib.pars import plotpath, pars
 
 from draw.corrmtx import drawCorrMtx
 from draw.bias import drawFitBias
@@ -23,8 +21,7 @@ def main():
         print('Fit is bad')
         return
 
-    co = data['fitcor']
-    drawCorrMtx(co, 'upol')
+    drawCorrMtx('upol', data['fitcor'])
 
     print('Fit errors:')
     for key, [mean, err] in data['fitres'].items():

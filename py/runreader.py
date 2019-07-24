@@ -3,10 +3,10 @@
 import sys
 sys.path.append('./lib')
 
-from reader import ReaderTxt
-from pars import pars, datapath, Data
-from pdfs import csec6D
-from efficiency import DetEff
+from lib.reader import ReaderTxt
+from lib.pars import pars, datapath, Data, strxi
+from lib.pdfs import csec6D
+from lib.efficiency import DetEff
 
 import numpy as np
 
@@ -21,7 +21,7 @@ def main():
     xiList = np.linspace(-1., 1., 21)
 
     for xi in xiList:
-        label = '{:.1f}'.format(xi).replace('.','_')
+        label = strxi(xi)
         print(label)
         # Calculate matrix element squared
         msq = csec6D(Data(phsp), xi, pars)

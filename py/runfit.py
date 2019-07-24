@@ -20,7 +20,7 @@ fitmap = {
 def saveFitRes(ftype, xi, eff, nsig, fres):
     """ """
     np.savez(fitresfile(ftype, xi, eff),
-        status = np.array([[key, fres[0][key]] for key in  fres[0]]),
+        status=np.array([[key, fres[0][key]] for key in  fres[0]]),
         fitres=np.array([[p.name, [p.value, p.error * np.sqrt(nsig)]] for p in fres[1]]),
         corr=np.array(fres[2]),
         nsig=nsig
@@ -32,7 +32,7 @@ def getData(xi):
 def runfit(data, ftype, N=10**5., xi=0., eff=False):
     """ """
     xi = '{:.1f}'.format(xi).replace('.', '_')
-
+    print('N = {}'.format(N))
     signal = Data(applyDetEff(data['signal'][:N], data['signalmask'][:N], False))\
         if eff else Data(data['signal'][:N])
     norm = Data(data['phsp'])

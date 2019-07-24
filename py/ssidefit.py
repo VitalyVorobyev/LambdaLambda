@@ -6,16 +6,11 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 
 from lib.fitresreader import readFitRes
-from lib.pars import strxi, datafile
-from lib.fitter import FitSSide
+from lib.pars import strxi
 
 from draw.bias import drawFitBiasXi
 from draw.precision import drawPrecision
 from draw.corrmtx import drawCorrAB, drawCorrMtx
-
-from runfit import runfit #, fitmap, saveFitRes
-
-# from pars import Data, Pars, pars, , fitresfile
 
 def loadData(xi):
     """ """
@@ -29,21 +24,16 @@ def corxi(dataxi):
 
 def main():
     """ Unit test """
-    xi = 0.8
-    data = np.load(datafile(xi))
-    # print(data['phsp'])
-    runfit(data, 'ss3d', 10**5., xi)
-
-    # xil = np.linspace(-1, 0.901, 20)
-    # dataxi = OrderedDict([xi, loadData(xi)] for xi in xil)
-    # fresxi = frexi(dataxi)
-    # corrxi = corxi(dataxi)
-    # print(corrxi.keys())
-
-    # drawFitBiasXi('full', fresxi, 10**5)
-    # drawPrecision('full', fresxi, True)
-    # drawCorrAB('full', corrxi)
-    # drawCorrMtx('ss3d', corrxi['0_8'], 0.8)
+    xil = np.linspace(-1, 0.901, 20)
+    dataxi = OrderedDict([xi, loadData(xi)] for xi in xil)
+    fresxi = frexi(dataxi)
+    corrxi = corxi(dataxi)
+    print(corrxi.keys())
+    
+    drawFitBiasXi('ss3d', fresxi, 10**5)
+    drawPrecision('ss3d', fresxi, True)
+    drawCorrAB('ss3d', corrxi)
+    drawCorrMtx('ss3d', corrxi['0_8'], 0.8)
 
 if __name__ == '__main__':
     main()

@@ -63,7 +63,6 @@ def heatmap(data, row_labels, col_labels, ax=None,
 
     return im, cbar
 
-
 def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
                      textcolors=["black", "white"],
                      threshold=None, **textkw):

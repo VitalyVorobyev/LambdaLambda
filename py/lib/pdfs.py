@@ -37,9 +37,18 @@ def csecPhi(data, xi, p=pars):
     return 1. + p.alpha / 3. +\
         xi*pisqOver16*p.alph1*p.beta*p.cosdphi*data.cosphi1
 
+def csecPhiRaw(phi1, xi, p=pars):
+    """ 1D cross section for azimuthal angle in Lambda frame """
+    return 1. + p.alpha / 3. +\
+        xi*pisqOver16*p.alph1*p.beta*p.cosdphi*np.cos(phi1)
+
 def csec2D(data, xi, p=pars):
     """ Single Lambda cross section """
     return 1. + data.costh*(p.alpha*data.costh + xi*(1.+p.alpha)*p.alph1*data.costh1)
+
+def csec2DRaw(costh, costh1, xi, p=pars):
+    """ Single Lambda cross section """
+    return 1. + costh*(p.alpha*costh + xi*(1.+p.alpha)*p.alph1*costh1)
 
 def aLR(xi, p=pars):
     """ Left-right asymmetry """

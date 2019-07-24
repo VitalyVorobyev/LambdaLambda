@@ -28,7 +28,7 @@ class FitFull(object):
             alph2=init.alph2, error_alph2=0.1, limit_alph2=(-1., 0.),       fix_alph2=False,
                xi= 0.0,       error_xi   =0.5, limit_xi   =(-1.05, 1.01),   fix_xi   =False
         )
-        
+
         fmin, param = minimizer.migrad()
         minimizer.print_param()
         corrmtx = minimizer.matrix(correlation=True)
