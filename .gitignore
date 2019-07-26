@@ -10,3 +10,4 @@ Faldt
 src
 CMakeLists.txt
 .pyc
+__pycache__

@@ -46,6 +46,11 @@ def fitresfile(ftype, xi, eff):
         components.append('eff')
     return '/'.join([frespath, '_'.join(components)])
 
+def simfitresfile(ftype, m, xi):
+    """ File to keep fit results """
+    components = ['fres', ftype, str(m), strxi(xi)]
+    return '/'.join([frespath, '_'.join(components)])
+
 class Pars(object):
     def __init__(self, dphi, alpha, alph1, alph2=None):
         self.dphi = dphi
@@ -55,6 +60,7 @@ class Pars(object):
         self.beta = np.sqrt(1. - alpha**2)
         self.alph1 = alph1
         self.alph2 = -alph1 if alph2 is None else alph2
+        self.array = np.array([alpha, dphi, alph1, self.alph2])
         self.pdict = OrderedDict(
             [['alpha', alpha], ['dphi', dphi], ['alph1', alph1], ['alph2', self.alph2]]
         )
