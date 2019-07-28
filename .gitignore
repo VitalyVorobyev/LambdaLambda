@@ -11,3 +11,4 @@ src
 CMakeLists.txt
 .pyc
 __pycache__
+py/lib/__pycache__
